@@ -13,6 +13,8 @@ var progressRe = regexp.MustCompile(
 var baselineRe = regexp.MustCompile(
 	`elapsed:\s*([0-9hms.]+),\s*gathering baseline coverage:\s*(\d+)/(\d+)`)
 
+var crashRe = regexp.MustCompile(`Failing input written to (\S+)`)
+
 // ParseLine turns one line of `go test -fuzz` output into an event. The second
 // result is false for lines that carry no status Fathom tracks.
 func ParseLine(line string) (Event, bool) {
@@ -34,6 +36,12 @@ func ParseLine(line string) (Event, bool) {
 			BaselineAt: int(atoi64(m[2])),
 			BaselineOf: int(atoi64(m[3])),
 		}, true
+	}
+	if m := crashRe.FindStringSubmatch(line); m != nil {
+		return Event{Kind: KindCrash, CrashInput: m[1]}, true
+	}
+	if line == "PASS" || strings.HasPrefix(line, "ok ") {
+		return Event{Kind: KindDone}, true
 	}
 	return Event{}, false
 }
