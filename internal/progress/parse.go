@@ -10,6 +10,9 @@ import (
 var progressRe = regexp.MustCompile(
 	`elapsed:\s*([0-9hms.]+),\s*execs:\s*(\d+)\s*\((\d+)/sec\),\s*new interesting:\s*(\d+)\s*\(total:\s*(\d+)\)`)
 
+var baselineRe = regexp.MustCompile(
+	`elapsed:\s*([0-9hms.]+),\s*gathering baseline coverage:\s*(\d+)/(\d+)`)
+
 // ParseLine turns one line of `go test -fuzz` output into an event. The second
 // result is false for lines that carry no status Fathom tracks.
 func ParseLine(line string) (Event, bool) {
@@ -22,6 +25,14 @@ func ParseLine(line string) (Event, bool) {
 			ExecsPerSec: atoi64(m[3]),
 			Interesting: int(atoi64(m[4])),
 			CorpusTotal: int(atoi64(m[5])),
+		}, true
+	}
+	if m := baselineRe.FindStringSubmatch(line); m != nil {
+		return Event{
+			Kind:       KindBaseline,
+			Elapsed:    parseDuration(m[1]),
+			BaselineAt: int(atoi64(m[2])),
+			BaselineOf: int(atoi64(m[3])),
 		}, true
 	}
 	return Event{}, false
