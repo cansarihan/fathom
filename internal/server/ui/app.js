@@ -125,7 +125,67 @@ async function finish(id) {
   }
 }
 
+// The echogram scrolls the aggregate exec/sec as a depth sounder trace: brighter
+// and taller where the engine runs hot, fading as it scrolls left.
+const canvas = $("echogram");
+const ctx = canvas.getContext("2d");
+let W = 0, H = 0, dpr = 1;
+
+function resize() {
+  dpr = Math.max(1, window.devicePixelRatio || 1);
+  const r = canvas.getBoundingClientRect();
+  W = r.width; H = r.height;
+  canvas.width = Math.floor(W * dpr);
+  canvas.height = Math.floor(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function drawEchogram() {
+  ctx.clearRect(0, 0, W, H);
+  // faint depth gridlines
+  ctx.strokeStyle = "rgba(21,48,60,0.8)";
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 4; i++) {
+    const y = (H * i) / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  const samples = rate.slice(-Math.floor(W));
+  const max = Math.max(1, ...samples);
+  const step = W / Math.max(1, samples.length);
+  // filled trace
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  samples.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (v / max) * (H - 12);
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(samples.length * step, H);
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "rgba(57,217,138,0.35)");
+  grad.addColorStop(1, "rgba(57,217,138,0.02)");
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // bright leading edge
+  ctx.beginPath();
+  samples.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (v / max) * (H - 12);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = "#39d98a";
+  ctx.lineWidth = 1.6;
+  ctx.shadowColor = "#39d98a";
+  ctx.shadowBlur = 8;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(drawEchogram);
+}
+
 async function init() {
+  resize();
+  window.addEventListener("resize", resize);
+  requestAnimationFrame(drawEchogram);
   $("run").addEventListener("click", start);
   try {
     const st = await (await fetch(auth("/api/v1/status"))).json();
