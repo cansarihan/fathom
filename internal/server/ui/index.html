@@ -1,1 +1,50 @@
-<!doctype html><title>fathom</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fathom</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <svg class="glyph" viewBox="0 0 64 40" width="40" height="26" aria-hidden="true">
+        <path d="M2 10 Q12 2 22 10 T42 10 T62 10" fill="none" stroke="#39d98a" stroke-width="2.4" opacity="0.6"/>
+        <path d="M2 22 Q12 14 22 22 T42 22" fill="none" stroke="#3bc7e0" stroke-width="2.4"/>
+        <circle cx="40" cy="32" r="3.4" fill="#ff5470"/>
+      </svg>
+      <div class="titles">
+        <h1>fathom</h1>
+        <p class="sub">coverage-guided fuzzing</p>
+      </div>
+    </div>
+    <div class="meta" id="meta">—</div>
+    <button id="run" class="run">new campaign</button>
+  </header>
+
+  <section class="strip">
+    <div class="stat"><b id="s-execs">0</b><span>execs</span></div>
+    <div class="stat"><b id="s-rate">0</b><span>exec/s</span></div>
+    <div class="stat"><b id="s-corpus">0</b><span>corpus</span></div>
+    <div class="stat"><b id="s-targets">0</b><span>targets</span></div>
+    <div class="stat crash"><b id="s-crashes">0</b><span>crashes</span></div>
+    <div class="status" id="status">idle</div>
+  </section>
+
+  <main class="stage">
+    <div class="sounder">
+      <canvas id="echogram"></canvas>
+      <div class="targets" id="targets"></div>
+    </div>
+    <aside class="contacts">
+      <div class="contacts-head"><span>crash contacts</span><span id="contact-count">0</span></div>
+      <ol id="crashes"></ol>
+      <p class="empty" id="empty">No contacts. Fuzzing…</p>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
