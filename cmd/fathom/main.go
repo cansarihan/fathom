@@ -27,6 +27,8 @@ func run() error {
 		return usage()
 	}
 	switch os.Args[1] {
+	case "targets":
+		return runTargets(os.Args[2:])
 	case "version":
 		fmt.Printf("fathom %s (commit %s, built %s)\n", version, commit, date)
 		return nil
