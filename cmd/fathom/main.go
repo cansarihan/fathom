@@ -39,6 +39,8 @@ func run() error {
 		return runCrashes(os.Args[2:])
 	case "replay":
 		return runReplay(os.Args[2:])
+	case "serve":
+		return runServe(os.Args[2:])
 	case "version":
 		fmt.Printf("fathom %s (commit %s, built %s)\n", version, commit, date)
 		return nil
