@@ -35,6 +35,8 @@ func run() error {
 		return runCampaign(os.Args[2:])
 	case "corpus":
 		return runCorpus(os.Args[2:])
+	case "crashes":
+		return runCrashes(os.Args[2:])
 	case "version":
 		fmt.Printf("fathom %s (commit %s, built %s)\n", version, commit, date)
 		return nil
