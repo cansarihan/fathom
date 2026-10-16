@@ -19,25 +19,43 @@ type Crash struct {
 }
 
 var (
-	hexAddr  = regexp.MustCompile(`0x[0-9a-fA-F]+`)
-	numParen = regexp.MustCompile(`\(\d+\)`)
+	hexAddr    = regexp.MustCompile(`0x[0-9a-fA-F]+`)
+	numParen   = regexp.MustCompile(`\(\d+\)`)
+	bracketNum = regexp.MustCompile(`\[:?\d+:?\d*\]`)
+	countWord  = regexp.MustCompile(`\b(capacity|length|index|len|cap) \d+`)
+	locPrefix  = regexp.MustCompile(`^[\w./]+\.go:\d+: `)
 )
 
-// Signature reduces a panic message to a stable key: the first meaningful line
-// with addresses and counts stripped, so the same fault from different inputs
-// collapses to one group.
+// Signature reduces a panic message to a stable key: the message that actually
+// describes the fault, with addresses, source locations and counts stripped, so
+// the same bug reached from different inputs collapses to one group.
 func Signature(panicText string) string {
+	best := ""
 	for _, line := range strings.Split(panicText, "\n") {
 		line = strings.TrimSpace(line)
-		if line == "" {
+		if line == "" || strings.HasPrefix(line, "---") {
 			continue
 		}
-		line = strings.TrimPrefix(line, "panic: ")
-		line = hexAddr.ReplaceAllString(line, "0x?")
-		line = numParen.ReplaceAllString(line, "(N)")
-		return line
+		line = locPrefix.ReplaceAllString(line, "")
+		if idx := strings.Index(line, "panic: "); idx >= 0 {
+			return normalizeSig(line[idx+len("panic: "):])
+		}
+		if best == "" {
+			best = line
+		}
 	}
-	return "unknown"
+	if best == "" {
+		return "unknown"
+	}
+	return normalizeSig(best)
+}
+
+func normalizeSig(line string) string {
+	line = hexAddr.ReplaceAllString(line, "0x?")
+	line = bracketNum.ReplaceAllString(line, "[N]")
+	line = countWord.ReplaceAllString(line, "$1 N")
+	line = numParen.ReplaceAllString(line, "(N)")
+	return strings.TrimSpace(line)
 }
 
 // New builds a crash from a target, input bytes and the panic text it caused.

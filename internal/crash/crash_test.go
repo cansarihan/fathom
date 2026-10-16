@@ -1,6 +1,9 @@
 package crash
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestDecodeRecord(t *testing.T) {
 	data := []byte("go test fuzz v1\n[]byte(\"he\\x00llo\")\nint(42)\n")
@@ -33,6 +36,20 @@ func TestSignatureStable(t *testing.T) {
 	}
 	if a == "" || a == "unknown" {
 		t.Errorf("unexpected signature %q", a)
+	}
+}
+
+func TestSignatureExtractsPanicLine(t *testing.T) {
+	text := "--- FAIL: FuzzParse (0.01s)\n    testing.go:1927: panic: runtime error: slice bounds out of range [:9] with capacity 8\n    panic({0x104, 0x53})"
+	sig := Signature(text)
+	if strings.Contains(sig, "FAIL") || strings.Contains(sig, "testing.go") {
+		t.Errorf("signature kept scaffolding: %q", sig)
+	}
+	if !strings.Contains(sig, "slice bounds out of range") {
+		t.Errorf("signature lost the fault: %q", sig)
+	}
+	if strings.Contains(sig, "[:9]") || strings.Contains(sig, "capacity 8") {
+		t.Errorf("signature not normalized: %q", sig)
 	}
 }
 
