@@ -1,0 +1,10 @@
+services:
+  fathom:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: fathom:demo
+    command: ["serve", "-dir", "/work/sample", "-listen", "0.0.0.0:8080", "-t", "8s"]
+    ports:
+      - "127.0.0.1:18160:8080"
+    restart: unless-stopped
