@@ -18,6 +18,8 @@ const (
 	KindCrash Kind = "crash"
 	// KindDone marks the campaign finishing cleanly.
 	KindDone Kind = "done"
+	// KindMinimizing marks the engine shrinking a failing input before it reports.
+	KindMinimizing Kind = "minimizing"
 )
 
 // Event is one parsed status line from a fuzzing run.

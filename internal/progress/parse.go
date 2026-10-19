@@ -15,6 +15,8 @@ var baselineRe = regexp.MustCompile(
 
 var crashRe = regexp.MustCompile(`Failing input written to (\S+)`)
 
+var minimizeRe = regexp.MustCompile(`minimizing`)
+
 // ParseLine turns one line of `go test -fuzz` output into an event. The second
 // result is false for lines that carry no status Fathom tracks.
 func ParseLine(line string) (Event, bool) {
@@ -39,6 +41,9 @@ func ParseLine(line string) (Event, bool) {
 	}
 	if m := crashRe.FindStringSubmatch(line); m != nil {
 		return Event{Kind: KindCrash, CrashInput: m[1]}, true
+	}
+	if minimizeRe.MatchString(line) {
+		return Event{Kind: KindMinimizing}, true
 	}
 	if line == "PASS" || strings.HasPrefix(line, "ok ") {
 		return Event{Kind: KindDone}, true

@@ -54,6 +54,13 @@ func TestParseDone(t *testing.T) {
 	}
 }
 
+func TestParseMinimizing(t *testing.T) {
+	e, ok := ParseLine("fuzz: minimizing 56-byte failing input file")
+	if !ok || e.Kind != KindMinimizing {
+		t.Errorf("minimizing not parsed: %+v ok=%v", e, ok)
+	}
+}
+
 func TestParseIgnoresNoise(t *testing.T) {
 	for _, l := range []string{"", "random log line", "=== RUN   FuzzParse"} {
 		if _, ok := ParseLine(l); ok {
