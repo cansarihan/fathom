@@ -41,6 +41,8 @@ func run() error {
 		return runReplay(os.Args[2:])
 	case "serve":
 		return runServe(os.Args[2:])
+	case "history":
+		return runHistory(os.Args[2:])
 	case "version":
 		fmt.Printf("fathom %s (commit %s, built %s)\n", version, commit, date)
 		return nil
@@ -50,7 +52,7 @@ func run() error {
 }
 
 func usage() error {
-	fmt.Fprintln(os.Stderr, "usage: fathom <targets|run|campaign|corpus|crashes|replay|serve|version> [args]")
+	fmt.Fprintln(os.Stderr, "usage: fathom <targets|run|campaign|corpus|crashes|replay|history|serve|version> [args]")
 	fmt.Fprintln(os.Stderr, "  fathom targets ./pkg")
 	fmt.Fprintln(os.Stderr, "  fathom campaign ./pkg -t 30s")
 	fmt.Fprintln(os.Stderr, "  fathom serve -dir ./pkg -listen 127.0.0.1:8080")
