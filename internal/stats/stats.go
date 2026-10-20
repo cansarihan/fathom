@@ -66,3 +66,16 @@ func (s *Series) Max() float64 {
 	}
 	return max
 }
+
+// Mean returns the average of the samples in the ring, or zero when empty.
+func (s *Series) Mean() float64 {
+	values := s.Snapshot()
+	if len(values) == 0 {
+		return 0
+	}
+	sum := 0.0
+	for _, v := range values {
+		sum += v
+	}
+	return sum / float64(len(values))
+}

@@ -20,6 +20,9 @@ func TestSeriesRingEviction(t *testing.T) {
 	if s.Max() != 5 {
 		t.Errorf("max = %v, want 5", s.Max())
 	}
+	if s.Mean() != 4 {
+		t.Errorf("mean = %v, want 4 (3,4,5)", s.Mean())
+	}
 }
 
 func TestSparklineWidthAndShape(t *testing.T) {
