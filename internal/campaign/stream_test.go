@@ -10,7 +10,7 @@ import (
 func TestStreamerHandlesProgressAndCrash(t *testing.T) {
 	dir := t.TempDir()
 	inputRel := "testdata/fuzz/FuzzX/abc123"
-	if err := os.MkdirAll(filepath.Dir(filepath.Join(dir, inputRel)), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(filepath.Join(dir, inputRel)), 0o750); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(dir, inputRel), []byte("go test fuzz v1\n[]byte(\"boom\")\n"), 0o600); err != nil {
