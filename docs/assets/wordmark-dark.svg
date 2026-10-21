@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 170" width="760" height="170" fill="none">
+  <g transform="translate(40,34)">
+    <path d="M0 18 Q20 2 40 18 T80 18" fill="none" stroke="#39d98a" stroke-width="3" opacity="0.5"/>
+    <path d="M0 38 Q20 22 40 38 T80 38" fill="none" stroke="#3bc7e0" stroke-width="3"/>
+    <path d="M0 58 Q20 42 40 58 T80 58" fill="none" stroke="#39d98a" stroke-width="3" opacity="0.3"/>
+    <circle cx="64" cy="74" r="6" fill="#ff5470"/>
+  </g>
+  <text x="150" y="92" font-family="Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="5" fill="#dfe8ec">fathom</text>
+  <text x="153" y="122" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5" letter-spacing="3" fill="#6b8793">coverage-guided fuzzing</text>
+  <g transform="translate(648,85)" font-family="ui-monospace, Menlo, monospace" font-size="10">
+    <rect x="-8" y="-34" width="96" height="16" rx="3" fill="#39d98a" opacity="0.12"/>
+    <text x="0" y="-22" fill="#39d98a">108k exec/s</text>
+    <rect x="-8" y="-12" width="96" height="16" rx="3" fill="#ff5470" opacity="0.14"/>
+    <text x="0" y="0" fill="#ff5470">1 crash</text>
+  </g>
+</svg>
