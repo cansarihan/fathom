@@ -19,6 +19,7 @@ import (
 func runCampaign(args []string) error {
 	flags := flag.NewFlagSet("campaign", flag.ContinueOnError)
 	total := flags.Duration("t", time.Minute, "total fuzz time across all targets")
+	rounds := flags.Int("rounds", 1, "interleave this many passes over the targets")
 	history := flags.String("history", "", "append the campaign to a JSON history file")
 	asJSON := flags.Bool("json", false, "print JSON instead of a table")
 	if err := flags.Parse(args); err != nil {
@@ -38,6 +39,9 @@ func runCampaign(args []string) error {
 		names[i] = t.Name
 	}
 	slots := schedule.Even(names, *total)
+	if *rounds > 1 {
+		slots = schedule.Rounds(names, *total, *rounds)
+	}
 
 	start := time.Now()
 	var results []campaign.Result
