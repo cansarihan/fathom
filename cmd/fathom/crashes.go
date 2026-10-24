@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -17,29 +16,16 @@ func runCrashes(args []string) error {
 	}
 	root := filepath.Join(dir(flags.Args(), 0), "testdata", "fuzz")
 
-	found := 0
-	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
-		if err != nil || d.IsDir() {
-			return nil
-		}
-		data, readErr := os.ReadFile(path) // #nosec G304 -- walking the target's own testdata
-		if readErr != nil {
-			return nil
-		}
-		rec, decodeErr := crash.DecodeRecord(data)
-		if decodeErr != nil {
-			return nil
-		}
-		target := filepath.Base(filepath.Dir(path))
-		found++
-		fmt.Printf("%s/%s\n  %s\n", target, filepath.Base(path), preview(rec))
-		return nil
-	})
+	inputs, err := crash.LoadInputs(root)
 	if err != nil {
 		return err
 	}
-	if found == 0 {
+	if len(inputs) == 0 {
 		fmt.Printf("no recorded crashes under %s\n", root)
+		return nil
+	}
+	for _, in := range inputs {
+		fmt.Printf("%s/%s\n  %s\n", in.Target, filepath.Base(in.Path), preview(in.Record))
 	}
 	return nil
 }
