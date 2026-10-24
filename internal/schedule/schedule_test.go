@@ -40,6 +40,23 @@ func TestWeightedFallsBackToEqual(t *testing.T) {
 	}
 }
 
+func TestRoundsInterleave(t *testing.T) {
+	slots := Rounds([]string{"a", "b"}, 8*time.Second, 2)
+	if len(slots) != 4 {
+		t.Fatalf("slots = %d, want 4 (2 targets × 2 rounds)", len(slots))
+	}
+	if sum(slots) != 8*time.Second {
+		t.Errorf("sum = %v, want 8s", sum(slots))
+	}
+	seen := map[string]int{}
+	for _, s := range slots {
+		seen[s.Target]++
+	}
+	if seen["a"] != 2 || seen["b"] != 2 {
+		t.Errorf("each target should run twice: %v", seen)
+	}
+}
+
 func TestEmptyInputs(t *testing.T) {
 	if Even(nil, time.Second) != nil || Even([]string{"a"}, 0) != nil {
 		t.Error("empty inputs should yield no slots")

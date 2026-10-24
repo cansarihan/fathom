@@ -57,3 +57,33 @@ func Weighted(targets []string, weights map[string]float64, total time.Duration)
 	slots[0].Duration += total - assigned
 	return slots
 }
+
+// Rounds splits total into n interleaved passes over the targets. Instead of
+// one long turn per target, each target gets n shorter turns, so a campaign
+// that is cut short still spent time on every target rather than stalling on the
+// first. The returned slots are in execution order.
+func Rounds(targets []string, total time.Duration, n int) []Slot {
+	if len(targets) == 0 || total <= 0 || n < 1 {
+		return nil
+	}
+	perRound := Even(targets, total/time.Duration(n))
+	remainder := total - sumSlots(perRound)*time.Duration(n)
+	slots := make([]Slot, 0, len(targets)*n)
+	for r := 0; r < n; r++ {
+		for _, s := range perRound {
+			slots = append(slots, s)
+		}
+	}
+	if len(slots) > 0 {
+		slots[0].Duration += remainder
+	}
+	return slots
+}
+
+func sumSlots(slots []Slot) time.Duration {
+	var total time.Duration
+	for _, s := range slots {
+		total += s.Duration
+	}
+	return total
+}
