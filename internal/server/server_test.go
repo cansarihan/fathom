@@ -99,3 +99,34 @@ func TestCampaignRun(t *testing.T) {
 		t.Error("expected the parser target to crash")
 	}
 }
+
+func TestListEmptyAndStatus(t *testing.T) {
+	srv := httptest.NewServer(newTestServer("", time.Second))
+	defer srv.Close()
+
+	res, err := http.Get(srv.URL + "/api/v1/campaigns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = res.Body.Close() }()
+	var list []Campaign
+	if err := json.NewDecoder(res.Body).Decode(&list); err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 0 {
+		t.Errorf("fresh server should have no campaigns, got %d", len(list))
+	}
+
+	sres, err := http.Get(srv.URL + "/api/v1/status")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = sres.Body.Close() }()
+	var st Status
+	if err := json.NewDecoder(sres.Body).Decode(&st); err != nil {
+		t.Fatal(err)
+	}
+	if st.Dir != sampleDir || st.Version != "test" {
+		t.Errorf("status = %+v", st)
+	}
+}
