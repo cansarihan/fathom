@@ -70,9 +70,7 @@ func Rounds(targets []string, total time.Duration, n int) []Slot {
 	remainder := total - sumSlots(perRound)*time.Duration(n)
 	slots := make([]Slot, 0, len(targets)*n)
 	for r := 0; r < n; r++ {
-		for _, s := range perRound {
-			slots = append(slots, s)
-		}
+		slots = append(slots, perRound...)
 	}
 	if len(slots) > 0 {
 		slots[0].Duration += remainder
