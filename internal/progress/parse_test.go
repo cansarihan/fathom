@@ -33,6 +33,9 @@ func TestParseBaseline(t *testing.T) {
 	if e.BaselineAt != 45 || e.BaselineOf != 120 {
 		t.Errorf("baseline %d/%d", e.BaselineAt, e.BaselineOf)
 	}
+	if got := e.BaselinePercent(); got < 37 || got > 38 {
+		t.Errorf("baseline percent = %v, want ~37.5", got)
+	}
 }
 
 func TestParseCrash(t *testing.T) {

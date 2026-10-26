@@ -34,3 +34,12 @@ type Event struct {
 	BaselineOf  int           `json:"baseline_of"`
 	CrashInput  string        `json:"crash_input,omitempty"`
 }
+
+// BaselinePercent is how far the baseline-coverage phase has progressed, 0 to
+// 100. It is meaningful only for a baseline event.
+func (e Event) BaselinePercent() float64 {
+	if e.BaselineOf <= 0 {
+		return 0
+	}
+	return float64(e.BaselineAt) / float64(e.BaselineOf) * 100
+}
